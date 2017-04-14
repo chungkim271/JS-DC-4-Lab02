@@ -12,29 +12,50 @@ var Tunr = {
       e.preventDefault()
       var artist = e.target.querySelector('input').value
 
-      var requestUrl = 'https://api.spotify.com/v1/search?q=' + urlify(artist) + '&type=artist'
+      var requestUrl = 'https://api.spotify.com/v1/search?q=' + urlify(artist) + '&type=artist&limit=4'
 
       var spotifyRequest = generateRequest( 'GET', requestUrl, handleSpotifyResponse )
 
       spotifyRequest.send()
 
       function handleSpotifyResponse( response ) {
-        
+
         var responseJSON = JSON.parse( response )
+        var artists = responseJSON.artists.items
+        var artistsContainer = document.querySelector('.js-artists-container')
 
-        console.log( responseJSON )
+        artists.forEach(function( artist ) {
+          var button = document.createElement('button')
+          button.id = artist.id
+          button.classList.add('c-artist-button')
+          button.innerText = artist.name
 
-        var postDataRequest = generateRequest( 'POST', '/artists', handleServerResponse )
+          artistsContainer.appendChild( button )
 
-        postDataRequest.send( encodeURI( "data=" + JSON.stringify( responseJSON.artists.items[0] ) ) )
+        })
 
-      }
+        artistsContainer.addEventListener('click', function( e ) {
+          e.preventDefault();
+          var target = e.target
 
-      function handleServerResponse( secondResponse ) {
+          console.dir(target)
 
-        if ( secondResponse === 'success' ) {
-          window.location.assign('/')
-        }
+          if ( target.tagName === "BUTTON" ) {
+
+            var createArtistRequest = generateRequest('POST', '/artists', handleServerResponse)
+
+            createArtistRequest.send( encodeURI( "data=" + JSON.stringify( { id: target.id } ) ) )
+          }
+
+          function handleServerResponse( secondResponse ) {
+
+            if ( secondResponse === 'success' ) {
+              window.location.assign('/artists')
+            }
+
+          }
+
+        })
 
       }
 

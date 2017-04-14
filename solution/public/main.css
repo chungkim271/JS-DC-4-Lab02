@@ -257,6 +257,23 @@ textarea {
 
 }
 
+.c-artist-list {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.c-artist-button {
+  margin-right: 1em;
+  margin-bottom: 1em;
+  outline: none;
+  border: 2px solid rgba(112, 169, 161, 1);
+  color: rgba(112, 169, 161, 1);
+  background-color: white;
+  padding: 1em 1.5em;
+}
+
 
 /*
 

@@ -3,6 +3,7 @@ var express = require('express')
 var hbs = require('express-handlebars')
 var mongoose = require('mongoose')
 var bodyParser = require('body-parser')
+var request = require('request')
 
 
 // Setup connection to MongoDB using Mongoose
@@ -40,7 +41,7 @@ app.get('/', function( req, res ) {
 app.get('/about', function( req, res ) {
 
   res.render('about')
-  
+
 })
 
 // Artist Routes
@@ -56,16 +57,24 @@ app.post('/artists', function( req, res ) {
 
   var data = JSON.parse( req.body.data );
 
-  var newArtist = new Artist({
-    name: data.name,
-    imageUrls: data.images,
-    spotifyId: data.id,
-    genres: data.genres
+  // look up documentation for request here:
+  // https://github.com/request/request
+  request('https://api.spotify.com/v1/artists/' + data.id, function( err, response, body ) {
+
+    var artistData = JSON.parse( body )
+
+    var newArtist = new Artist({
+      name: artistData.name,
+      imageUrls: artistData.images,
+      spotifyId: artistData.id,
+      genres: artistData.genres
+    })
+
+    newArtist.save()
+
+    res.status(200).send('success')
+
   })
-
-  newArtist.save()
-
-  res.status(200).send('success')
 
 })
 
